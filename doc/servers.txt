@@ -1,0 +1,133 @@
+====================================================================
+RagnarokOnline Patcher Lite
+(c) 2009-2021 Ai4rei/AN
+
+====================================================================
+
+== List of recognized official servers =============================
+
+- Arabic RO (aRO)
+    - Status:   Closed, as of 31st January 2013
+    - Region:   UAE
+    - Variants: RAG
+    - Support:  2.0.0 ~ 2.4.1
+    - Website:  http://ro.tahadi.com/
+
+- Brazilian RO (bRO)
+    - Status:   Working
+    - Region:   Brazil
+    - Variants: RAG
+    - Support:  Yes, as of 1.2.0 SE
+    - Website:  http://levelupgames.uol.com.br/ragnarok/
+
+- Chinese RO (cRO SDO)
+    - Status:   Closed
+    - Region:   China
+    - Variants: -
+    - Support:  No, v1 patcher in use
+
+- Chinese RO (cRO Kunlun)
+    - Status:   Closed, as of 19th February 2016
+    - Region:   China
+    - Variants: -
+    - Support:  No, custom patch system
+    - Website:  http://ro.kunlun.com/index.html
+
+- European RO (euRO)
+    - Status:   Closed, as of 30th September 2010
+    - Region:   EU
+    - Variants: RAG
+    - Support:  1.0.1 ~ 1.4.4
+    - Website:  http://www.euro-ro.net/
+
+- French RO (fRO)
+    - Status:   Closed, as of 12th August 2019
+    - Region:   France, EU
+    - Variants: RAG
+    - Support:  Yes, as of 2.0.0
+    - Website:  http://www.ragnarokeurope.com/
+
+- International RO (iRO)
+    - Status:   Working
+    - Region:   USA
+    - Variants: RAG
+    - Support:  Yes, as of 2.0.0, SAK, FREE, CLASSIC until 2.4.25, RESTART 2.4.17 ~ 2.4.25 (closed as of 11th July 2019)
+    - Website:  http://www.playragnarok.com/
+
+- Indian RO (inRO)
+    - Status:   Closed
+    - Region:   India (region-lock)
+    - Variants: -
+    - Support:  No
+
+- Indonesian RO (idRO)
+    - Status:   Unknown, NOT listed as official server by Gravity
+    - Region:   Indonesia (region-lock)
+    - Variants: RAG, SAK
+    - Support:  2.4.7 ~ 2.4.25
+    - Website:  http://ragnarok.lytogame.com/
+
+- Japanese RO (jRO)
+    - Status:   Working
+    - Region:   Japan
+    - Variants: RAG, URDR
+    - Support:  Yes, as of 1.2.0 SE
+    - Website:  http://ragnarokonline.gungho.jp/
+
+- Korean RO (kRO)
+    - Status:   Working
+    - Region:   Korea (partial region-lock)
+    - Variants: RAG, RE (SAK), ZERO
+    - Support:  Yes, as of 1.0.0, with community-contributed mirrors as of 2.4.5
+    - Website:  http://ro.gnjoy.com/
+
+- Malaysia RO (eRO/myRO)
+    - Status:   Working
+    - Region:   Malaysia (region-lock)
+    - Variants: RAG, FREE
+    - Support:  2.2.0 ~ 2.4.4 (eRO), No (myRO)
+    - Website:  http://ro.gameflier.com.my/
+
+- Philippines RO (pRO Level Up! Games)
+    - Status:   Closed
+    - Region:   Philippines
+    - Variants: RAG, SAK
+    - Support:  1.4.0 ~ 2.4.4
+    - Website:  http://ragnarok.levelupgames.ph/
+
+- Philippines RO (phRO Electronics Extreme)
+    - Status:   Working
+    - Region:   Philippines
+    - Variants: RAG
+    - Support:  Yes, as of 2.4.17
+    - Website:  http://www.ragnarokonline.com.ph/
+
+- Russian RO (rRO/ruRO)
+    - Status:   Closed, as of 16th November 2015
+    - Region:   Russia
+    - Variants: RAG
+    - Support:  1.3.0 ~ 2.4.1, custom patch system
+    - Website:  http://www.raggame.ru/
+
+- Thai RO (tRO/thRO)
+    - Status:   Closed, as of 30th June 2016
+    - Region:   Thailand
+    - Variants: RAG
+    - Support:  1.4.0 ~ 2.4.4
+    - Website:  http://ragnarok.playpark.com/
+
+- Taiwan RO (twRO GameFlier)
+    - Status:   Closed, as of 31st May 2016
+    - Region:   Taiwan
+    - Variants: RAG, FREE, ALL
+    - Support:  2.2.0 ~ 2.4.10
+    - Website:  http://ro.gameflier.com/
+
+- Taiwan RO (twRO GNJoy)
+    - Status:   Working
+    - Region:   Taiwan
+    - Variants: RAG
+    - Support:  Yes, as of 2.4.11, SAK until 2.4.18 (region-lock)
+    - Website:  http://ro.gnjoy.com.tw/
+
+======================================================= 2019-10-06 =

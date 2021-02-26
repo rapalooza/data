@@ -1,0 +1,43 @@
+====================================================================
+RagnarokOnline Patcher Lite
+(c) 2009-2021 Ai4rei/AN
+
+====================================================================
+
+== Privacy =========================================================
+
+    As of version 2.4.5, when kRO mirror support was introduced, the
+patcher has to contact the home website to retrieve information
+about currently available mirrors and mirrored files. These are
+retrieved over an unsecured HTTP connection.
+
+    As of version 2.0.0, the patcher supports automated checking for
+new versions, initially opt-in, as of version 2.4.5 as always on,
+and as of version 2.4.7 as opt-out with UI settings and ability to
+check for new versions manually. The information is retrieved over
+an unsecured HTTP connection.
+
+    As part of it's core functionality, the patcher communicates
+with the designated official web and patch server to retrieve patch
+information and files respectively. The communication happens over
+unsecured HTTP and FTP connections.
+
+    During the communication listed above, following information is
+disclosed as part of the protocol traffic:
+
+- HTTP:
+    - Public IP address of the source (implied).
+    - RO Patcher Lite version and ipatch configuration name (explicit, user-agent string).
+    - Windows* version and platform (explicit, user-agent string).
+- FTP:
+    - Public IP address of the source (implied).
+
+    Explicitly disclosed information is used for statistical purpose
+as aid for further development of the application. Collected data is
+not used to identify or contact an individual.
+
+    Custom and legacy pure builds may have further implications on
+privacy, as available in their respective privacy policies, if
+available.
+
+======================================================= 2015-04-19 =

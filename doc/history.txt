@@ -1,0 +1,455 @@
+====================================================================
+RagnarokOnline Patcher Lite
+(c) 2009-2021 Ai4rei/AN
+
+====================================================================
+
+== History =========================================================
+
+[Version 4.0.0]
++ Added native support for 64-bit Windows platforms.
+* Improved command line argument parser to be flexible in regards order and combinations of arguments (previously only fixes sets of arguments were supported).
+  * /updateonly (auto-close) now affects /repak and /testpak as well.
+* Improved GDI drawing routines.
+* Improved progress reporting (title, progress bar, task button progress) to be more consistent. Features absent from newer platforms are replicated whenever possible to allow for consistent appearence between versions.
+* License has changed to CC BY-NC-ND 4.0.
+* Minor adjustments to UI to meet Windows UI Layout Guidelines.
+* Moved utility functions into a separate accessible menu button to keep the interface clean.
+* "No suitable mirror server" message has been enhanced with a code to indicate, why no mirror server was suitable.
+* Patch process is now canceled cleanly, in a controlled manner, rather than being shot-down by TerminateThread.
+* Rewrote the entire download machinery, so make it more flexible and potentially support HTTPS, should ever Gravity use that for patch servers.
+  ! Fixed failed HTTP requests could jam the patch process.
+* Side-loaded patches are no longer subject to mirror server hash checking.
+* Suggested auto-repacking is no longer part of the patch process, but starts separately (this way, even if the repacking fails, the patch process outcome is not impacted).
+* Unless the patcher runs on automatic-mode ( /updateonly ), download failures will now ask the user to retry before giving up after two attempts.
+* Updated application icon to support common DPI configurations.
+* Updated zlib to 1.2.11.
+* Updated GRF engine to rsulib3.
+  + Adds support for archives up to 8GiB-2 in size.
+    ! Fixes opening archives with data near the 4GiB-1 edge could fail.
+  + Adds support for archives that are served over-the-air or use otherwise uncommon storage media.
+  + Adds support for item names longer than 260 characters (up to 4GiB-2). Note, that the client must be updated to make use of item names longer than 252 characters.
+  + Adds support for reusing wasted space. This means, that the archive may actually shrink after patching and full-archive repacking becomes unnecessary.
+  * Updates I/O operations to be ordered for improved performance on media with moving parts.
+  * Decreases potential for data corruption during V1 archive upgrade to V2.
+  * Eliminates allocation spam during queuing and finalizing a merge list, and during verify and repacking.
+  * Further decreases potential for data corruption during commit when interrupted by OS crash or power outage (it was already low, but now it's even better).
+  * Reduces memory usage by about 77%.
+  * Various speed improvements.
+  ! Fixes some states would not be initialized properly.
+  ! Fixes potential modification of read-only archives.
+  ! Fixes waste calculation could be inaccurate, among others when it runs out of memory.
+  ! Fixes waste calculation would not be refreshed after commit (this bug directly affected suggested repack in rsu).
+  ! Fixes merging a patch, that does not result in any changes, would fail.
+  ! Fixes an error, when merging a patch, that does not result in any changes (yes, I talk about you, 2004-06-08gdata_k2.gpf).
+  ! Fixes unsupported archives would be treated as corrupted.
+  ! Fixes poor performance when parsing item names.
+  ! Fixes incorrectly set item count could be interpreted as an empty archive without causing an error.
+  ! Fixes more data could be parsed for meta information than actually valid in V1 archives.
+  ! Fixes V2 archives without any items could not be saved.
+  ! Fixes archives with items beyond 4GiB-1 edge would fail to load.
+  ! Fixes some edge cases during GDES decryption.
+  ! Fixes possible memory corruption when zlib functions run out of memory.
+  ! Fixes a crash when opening an archives fails due to insufficient memory.
+  ! Fixes memory corruption when handling uncompressed items in specially crafted archives.
+  ! Fixes some items could be considered to be empty rather than corrupted.
+  ! Fixes empty items would be stored in a way, that the client refuses to open.
+  ! Fixes replacing items could delete the old version, even if the new version fails to be written.
+  ! Fixes potential failure of decompression of encrypted items.
+  ! Fixes encrypted, uncompressed items would be all zeros (caused by emulating an official bug; the emulation is now removed and uncompressed items are handled properly).
+  - Removes error tolerance when unpacking data, when only the unpacked length differs, but the data is otherwise considered valid (the data may be valid, but the meta data is not then). This corresponds to how the client deals with this scenario.
+    ! Fixes an infinite loop when unpacking specially crafted archives.
+  - Removes fast estimation of waste (now it is always accurate).
+! Fixed buttons would lose keyboard focus during patch process.
+! Fixed degraded performance during patch merging, because the merge list was sorted by random values.
+! Fixed poor error message when a file on the mirror server has wrong size.
+! Fixed degraded performance when relaunching the mirror server fallback.
+! Fixed poor handling of partial commit status messages.
+! Fixed possible dead-lock on single-processor NT machines.
+! Fixed possible bogus behavior when automating the patcher buttons.
+! Fixed long start-up times when started in large directories.
+! Fixed repair would annoy with the read-me, even when there are no patches to return to.
+! Fixed UI would not scale with DPI (DPI awareness).
+! Fixed window title would flicker when the patch process is running very fast.
+! Fixed window would be centered incorrectly.
+! Fixed HTTP mirror server downloads would not be subject to mirror server hash checking.
+! Fixed UI responsiveness could be slow on single-processor NT machines.
+! Fixed poor initialization failure error message.
+! Fixed repair dialog not using current theme font.
+! Fixed incorrect popup menu creation.
+! Fixed X-button not behaving the same as Cancel/Close button.
+! Fixed /testpak and /repak not working in mirror-only mode.
+! Fixed options displayed in the system menu would not necessarily reflect the current configuration.
+! Fixed missing patch list would cause the patch process to succeed.
+! Fixed failure to read patch.inf would cause loss of progress information.
+! Fixed client and/or links might not open properly on systems with non-standard configuration.
+! Fixed poor keyboard-exclusive operation.
+! Fixed stack buffer overflow in patch_allow.txt checking (since 2.0.0).
+! [snippets::btypes] Fixed/shimmed _*nprintf not zero-terminating the output buffer, if the buffer is too small, on certain MSVC versions.
+! [snippets::bvcnum] Fixed some percent calculations being lossy for certain input values.
+! [snippets::memtaf] Fixed corruption checks would have no effect.
+! [snippets::wnttools] Fixed delay-loaded system DLLs could be spoofed.
+! [snippets::wnttools] Fixed Win95 support.
+! [snippets::w32ui] Fixed single-instance lock would roll-back incorrectly during failure.
+! [snippets::w32wnd] Fixed main window could lose focus after showing the repair dialog.
+- Removed self-update functionality (since the patch source is only Gravity, there is no need for that).
+- Removed support for external localization files. Localization is now performed in OpenSetup manner as embedded resource strings, note however, that unlike OpenSetup, the patcher is not available for customization under current license terms (ND).
+
+[Version 2.4.28]
++ Added a "Repair" button that allows you to re-apply old patches to restore corrupted files.
+! Fixed files updated with RGZ would get corrupted (since 2.4.26).
+! Fixed corrupted archives would trip an assertion (since 1.1.0, assertion since 2.4.26).
+
+[Version 2.4.27]
+! Fixed possible buffer corruption (since 2.4.21).
+
+[Version 2.4.26]
+* Updated phRO patch information.
+* GRF and RGZ performance improvements.
+! Fixed potential crash/memory corruption due to uninitialized memory (since 1.1.0, related 2.0.0).
+! Fixed menu being created incorrectly.
+- Removed iRO Sakray, Classic and Free, and idRO patch information (no user base and no up-to-date info).
+- Removed iRO:Restart patch information (shutdown).
+# Known issue: Non-compressed, encrypted files are not processed correctly.
+
+[Version 2.4.25]
++ Added option to never use mirrors (to prevent the mirror from corrupting itself).
++ Added support for mirrors that use HTTP as transport.
++ Added mirror support for kRO Zero.
+* Updated kRO patch information.
+* Updated kRO Zero patch information.
+
+[Version 2.4.24]
+* Updated bRO patch information (even though no one cared for two years).
+- Removed fRO (closed).
+
+[Version 2.4.23]
+- Removed notice about archives over 2GiB (since 2.4.8).
+- Removed prompt for repack for an archive over 2GiB (since 2.4.8).
+
+[Version 2.4.22]
+! Fixed potential issue in the patch process (since 2.4.21).
+
+[Version 2.4.21]
+* Updated kRO patch information.
+
+[Version 2.4.20]
+* Updated twRO patch information.
+
+[Version 2.4.18]
+* Window title is now decorated with current patch information name.
+! Fixed potential crash caused by reading memory after it has been freed (since 2.4.7).
+
+[Version 2.4.17]
++ Added iRO:Restart patch information.
++ Added kRO Zero patch information. Note, that this configuration is not covered by mirror support, because it uses a different patch server.
++ Added phRO (EE) patch information.
+* Updated jRO patch information to reflect new patch transfer protocol (HTTP) and server.
+! Fixed random crashes on multi-core CPUs when the process exits early.
+
+[Version 2.4.16]
++ Added /downloadonly switch for unattended patch download.
+* Updated kRO patch information to reflect new patch transfer protocol (HTTP).
+* Patch process will no longer work, if the GRF archive is missing (from 4.0.0).
+! Fixed mirror support would no longer work with the new patch information.
+
+[Version 2.4.15]
++ Added support for GRF resets (GRF in RGZ), mainly used on sakray servers.
+! Fixed file creation/updates would fail, if the destination file already existed and has special attributes assigned (since r1, thx Sem).
+! Fixed file creation/updates could fail, if the destination file is on a network share (since r1).
+! Fixed a critical section memory leak (since 2.4.12).
+! Fixed kRO RE would not allow starting the game client, even when it exists (since 2.4.5).
+! Fixed the main window being prank-called by the worker thread (since 1.4.0, http://ai4rei.net/p/VMmIy).
+! Fixed taskbar button progress bar remaining indeterminate, when no patches are available.
+! Fixed duplicate entries in temporary file list (since r1).
+- Removed static check for too long paths (since 2.1.0).
+
+[Version 2.4.14]
++ Added an option to not display new versions that were already seen. This is prevents the new version notice until the next new version, but still provides usage stats.
+! Fixed an uninitialized-value issue preventing the mirror fallbacks from working properly (since 2.4.12).
+
+[Version 2.4.12]
+* Increased receive buffer for network operations to accomodate high-speed network connections.
+! Fixed network file retrieval not accomodating to network speeds properly (since r1, related 1.4.4, 2.4.1).
+! Fixed disk write failures would be reported as download failures (since r1).
+! Fixed occasional status text clipping.
+! Fixed memory leak when RGZ extraction fails (since 2.1.0).
+! Fixed memory leak when a mirror-based patch task is canceled (since 2.4.5).
+! Fixed blurry taskbar icon in Windows 10 (if you pin it, it's still blurred, but that is up to Microsoft to fix).
+
+[Version 2.4.11]
++ Added support for patches over HTTP (Ragnarok.exe g_nProtocol == 1).
+* Updated twRO patch information to reflect new owner (GNJoy) and patch transfer protocol (HTTP). Removes ALL and FREE configuration, adds SAK instead.
+
+[Version 2.4.10]
++ Added option to always use mirrors (thus skip waiting for official patcher server to fail).
+! Fixed kRO mirror selection not being sufficiently random (since 2.4.8).
+
+[Version 2.4.9]
+! Fixed minor JSON parse issues (since 2.4.5).
+! Fixed patching asking for elevation when already elevated (since 1.3.0).
+! [snippets::wnttools] Fixed evelation being requested (even when elevated) when running from file systems without security info (FAT) on NT platforms (since 2.4.4).
+- Removed cRO (kunlun), rRO and thRO (all of them shutdown).
+# Known issue: WriteFile failures (ex. insufficient space) during download are handled like network failures. To be fixed in next major release. (since 1.0.1).
+
+[Version 2.4.8]
++ Added ASLR and DEP support.
+* Improved the way kRO mirrors are selected to distribute the load among them more efficiently.
+* Improved GRF repacking scenario, also offers to repack oversized archives.
+
+[Version 2.4.7]
++ Readded support for settings.
++ Added private data disclosure information (doc/privacy.txt).
++ Added overview of supported/recognized servers (doc/servers.txt).
++ Added taskbar button progress bar support (from 3.x branch).
++ Added idRO patch information.
+* Performance improvements.
+* Changes to notifications of new patcher versions.
+  + Added option to the system menu to check for new version manually.
+  + Added option to the system menu to disable automatic checks for new version, although it is discouraged.
+  * Notifications now show further information about the latest version.
+  * New versions are no longer checked more often than once a day.
+  * Unattended patch processes ( /updateonly ) no longer check for new versions.
+- Removed various textual references to removed features.
+- Removed iRO Yggdrasil (official patch information no longer lists it).
+
+[Version 2.4.6]
+* Moved kRO mirror credits from window title to a separate slide-out status.
+
+[Version 2.4.5]
++ Added support for community contributed fall-back kRO mirrors.
+- Dropped support for plug-ins and settings, there is going to be a separate application to fill those needs.
+- Removed pRO (shut down).
+
+[Version 2.4.4]
+* Marked as compatible with Windows 10.
+* Improved elevation checking, some users might experience a perceivable delay upon application start.
+* Very long status texts are now collapsed into centered ellipsis, rather than clipped.
+! Fixed uninitialized buffer could cause junk in UI.
+! Fixed various glitches and quirks in UI handling.
+! Fixed patch process would not stop when requested under certain conditions (since 2.4.4 NIGHTLY).
+! Fixed a rare case where the GRF archive could become corrupted when the patch process was aborted prematurely (since 1.1.0).
+- Dropped support for Lua-based file deletion, the official mechanics allow deletion of arbitrary files outside the RO folder (ex. system files).
+- Dropped support for SSO entirely.
+- Removed eRO/myRO (region-lock?) and thRO (region-lock or change of patch system?).
+
+[Version 2.4.3]
+* Marked as compatible with Windows 8.1.
+! Fixed RO client would run with patcher's privileges, rather than request it's own.
+
+[Version 2.4.2]
++ Added iRO Classic.
+* Updated iRO patch information.
+* Updated manifest to keep Windows Vista+ from applying unnecessary quirks.
+- Removed aRO (shut down) and rRO (uses different patcher).
+
+[Version 2.4.1]
++ Added debug log to track connection issues (timeouts, aborts, hangs).
+* Keeping downloaded patches (SHIFT+Close) now works even when the patch process failed.
+* Updated aRO patch information.
+! Fixed auto-adjustment to connection speed not working as intended for certain WinInet versions (experimental/debug).
+! Fixed FTP connections needing too much time (about 1 hour) to realize that they timed out for certain WinInet versions.
+
+[Version 2.4.0]
+* Updated kRO patch information to still allow access to the old patch server (thx Yommy).
+
+[Version 2.3.0]
+* Updated kRO patch information for new FTP and patch list locations. The patcher detects automatically when to switch to the new patch information.
+
+[Version 2.2.0]
++ Added message informing about patch.inf save failure and giving chance to resolve the issue manually.
++ Added patch information for pRO Sakray, iRO Yggdrasil (replaces Rag), eRO Rag/Free and twRO.
+! Fixed extracting RGZ archives showing 'Creating end...' in status line shortly.
+- Undid fix to 'repacked archives always having 8 bytes of waste', as this does not justify the code complexity to achieve same level of integrity in case of unexpected interruption when updating an archive (since 2.0.0).
+- kRO clients no longer feature the SSO login support, until it is reinvestigated.
+
+[Version 2.1.1]
+! Fixed an issue, that prevented 'large' network resources from getting stored temporarily, causing kRO sign-in to fail (since 2.1.0).
+! Fixed kRO sign-in referrer getting escaped before sending (since 2.1.0).
+! Fixed a detected buffer-overflow in user name and password escaping (since 2.1.0).
+! Fixed a memory leak in kRO sign-in (since 2.1.0).
+
+[Version 2.1.0]
++ Added support for GRF v1.01.
++ Added support for official Lua-based in-archive file deletion.
+  # Initially written for Lua 5.1.4, but official compiled scripts turned out to be incompatible (Gravity uses 5.0.2).
++ Added support for kRO sign-in (for credits, see System Menu -> About).
++ Added check and warning, whether or not the patcher is located in a too long path, so that patches do not fail 'for no apparent reason'.
+* No longer closes silently when initialization fails, but present an error message.
+* Improved context-sensitive help in certain dialogs.
+! Fixed out-of-memory condition in file node manager (responsible for reusage and deletion of temporary files) causing the entire patch process to fail (since r1).
+! Fixed writing RGZ archive contents displaying the archive's name, rather than the object being written (since r1).
+! Fixed no longer working in wine (since 2.0.1).
+! Fixed jRO Urdr patch information client parameter (since 1.2.0 SE).
+! [snippets::memory] Fixed zero-allocation returning bogus pointer, rather than NULL (since 2.0.0).
+
+[Version 2.0.1]
+* Normal (uncompressed) file content is no longer retrieved, instead the output buffer is initialized to zero (official).
+  # The engine is given the ability to override this behavior on demand, as it seems more like a bug, rather than 'feature', because the initialization is done by copying a pre-initialized buffer.
+! Fixed /test checking the archive, rather than by-passing patch_allow.txt (like 'donut'), due to a misconception in initial release. Archives can now be tested with switch /testpak (since r1).
+! Fixed hard-link creation not failing on read-only archives, until the archive was commited (since 1.2.2).
+- Removed remnants from asrdll integration (since 2.0.0).
+
+[Version 2.0.0]
++ Added support for Windows 7 task button progress bars, as certain settings keep the button title hidden.
++ Added support for i18n back to the patcher and enabled strings being read from rsu.ini (renders i18n plugin unusable).
++ Added support for external ipatch back to the patcher (renders ipatch plugin unusable).
++ Added support for checking for updates (disabled by default and there is no UI to enable this yet, except editing rsu.ini manually).
+* If there is a settings file, only plug-ins listed in [rsu]-PlugIn list are loaded. If the settings file is absent, all found plug-ins are loaded.
+* Made the patcher allow multiple instances being run at same time, as long as they operate in different folders.
+* If multiple patches contain the same file, only the latest version of that file is patched (faster).
+! Fixed ipatch always requiring full set of keys, instead of checking each key for validity by itself (since 1.2.0).
+! Fixed retrieving files from archive not updating actual length of the buffer, when the file in question was not compressed (rare) (since 1.1.0).
+! Fixed patcher only exiting, when one loaded plug-in fails to initialize. Now the patcher exists, if at least one plug-in fails to initialize (since 1.4.1).
+! Fixed distortion of the application icon when started with WINE (since r1).
+! Fixed entry allocation increasing by 8 bytes upon storing a file, leading to invisible waste, without impact on actual data (since 1.1.0).
+! Fixed entry allocation glitch when merging archives (since 1.1.0).
+! Fixed zero-entries getting allocated and retrieved when merging archives (since 1.1.0).
+! Fixed allocation spam when merging or testing archives (since 1.1.0).
+! Fixed waste calculation returning invalid value, when used on an archive without files (since 1.1.0).
+! Fixed memory leaks, when patch process was aborted (since r1).
+! Fixed repacked archives always having 8 bytes of waste (since 1.1.0).
+! Fixed verifying archives could yield false positives in low-memory conditions (since 1.1.0).
+! Fixed memory leaks, when repacking or testing process was aborted (since r1).
+! [snippets::hashdb] Fixed a crash in low-memory conditions (since 1.1.0).
+- Removed impossible check in window creation, which would have led to a memory leak anyway (since 1.4.0).
+
+[Version 1.4.4]
+* Plug-ins are now given a chance to handle WEB and FTP type transfer failures.
+* Plug-ins can be updated now by patching pluginname.new, which will turn into pluginname.rpi on next patcher start.
+! Fixed plug-in scheduled tasks not getting executed, when the first task fails (since 1.4.1).
+! Fixed patcher's performance could be negatively affected by high-usage normal-priority tasks (reported for 1.1.0, since 1.0.6).
+! Fixed downloads aborting after timeouts with high latency/low speed connections (reported for 1.4.1, since r1).
+- Dropped ability to look for patcher updates (noone used this). Ability to self-update via rsu-new.exe remains.
+
+[Version 1.4.3]
+* ENTER and ESC keys now correspond to 'Start' and 'Close' buttons respectively.
+* Plug-in system debug messages are now in nightly releases only.
+! Fixed temporary RGZ file not getting deleted, when RGZ extraction fails (since 1.4.2).
+
+[Version 1.4.2]
+* If a plug-in registers a client through IPlugCommon::SetPatchInfo and the client is present after patch process, the start button is enabled to start it.
+* Lite releases now start the patch process automatically, as there is nothing to select anyway. Start button will start the game client after successful patch process.
+! Fixed a glitch causing start button getting turned on/off, even when the close button was specified (since 1.4.1).
+! Fixed status line displaying repacking-message, even when no changes were scheduled (since 1.0.4).
+! Fixed RGZ archives not getting deleted after successful extraction (since 1.3.0).
+! Fixed a small memory leak, when RGZ extraction fails (since 1.3.0).
+
+[Version 1.4.1]
++ Added support & documentation for plug-ins.
+! Fixed a bug, that made GRF archives larger than 2GB unusable (since r1, and 1.1.0).
+! Fixed bug with start button, when patcher updated was done before actual patching (since 1.4.0).
+- Dropped i18n, is now a plugin.
+- Dropped ipatch, is now a plugin.
+
+[Version 1.4.0]
++ Added support for starting the game client after patch process is complete (optional).
++ Added /autostart command line parameter, that makes the patcher start patching without having to click 'Start' (shortcut usage).
++ Added ability to look for updates for the patcher itself.
+* Overall progress in title bar is now visible during the entire patch progress.
+* Optimized ipatch reading a bit, making it also less messy.
+* Optimized retrieval of WEB type files, cuts down a lot of wait time on slow connections.
+! Fixed zero-length patch files would appear to not exist (since 1.1.0).
+! Fixed GDI leak in window creation (since r1).
+! Fixed a possible FTP connect issue when FtpUser and FtpPass are supplied externally, but left empty (since 1.2.0).
+! Fixed WEB type files being cached, causing problems on mis-configurated machines (since r1).
+! Fixed main window ignoring nShowCmd (window state set through shortcuts) (since r1).
+- Removed partial progress from title bar, when minimized.
+- Normal releases will no longer contain virus.txt as it takes up to much work to set it up. Re-scan the files when in doubt.
+
+[Version 1.3.0]
++ Implemented on-demand elevation in case of missing write rights.
+* Empty files are no longer retrieved (as there is nothing to retrieve).
+* Failed downloads are now retried once. If a file fails twice, already downloaded patches are applied.
+* No longer causes non-critical blue screen or exception dialog on Windows 9x or Windows NT platforms respectively, when running on removable media, that got removed.
+* No longer blocks patch process canceling during finalizing grf.
+# Final release.
+
+[Version 1.2.2]
+! Fixed in-progress area of the grf not getting cleared on failure, leading to unnecessary wasted space.
+
+[Version 1.2.1]
+! Fixed patchlist processing not skipping lines properly, that contain only a patch number (thx jRO).
+
+[Version 1.2.0]
++ Added localization support.
++ Added support for external patch information.
+* Pressing 'Close' while SHIFT key is held preserves downloaded patches.
+* No longer reuses space of entries, that are about being replaced, as it leaves the archive in undefined state, yet fixable through repatching, when patch process is aborted.
+! Fixed random UI font getting selected, when the requested one is not present.
+! Fixed UI getting slowed down by other initialization during start up.
+! Fixed incomplete files not getting cleaned up on exit.
+! Fixed wasted space calculation not including v2.0 headers.
+
+[Version 1.1.2]
+* When patching is not allowed through patch_allow.txt, the status line indicates, that the server is on maintenance, instead of having appearance of being up-to-date.
+* Improved RGZ processing and lowered associated memory usage.
+! Fixed reading non-existing files caused creation of zero-length files with same name.
+! Fixed retrieving/storing files in grf archives not supporting zero-length files.
+
+[Version 1.1.1]
+! Fixed an access violation in patch list sorting, when no patches were present.
+
+[Version 1.1.0]
++ Added own grf reading/writing implementation ( -181KB / +19KB ), as grf.dll doesn't work properly under some circumstances (mostly when dealing with 1.x grfs) and has no 'revert'-facility for errors.
++ Added /test & /repak command line parameter support adapted from official patcher.
+* The patcher now asks, whether to perform a full repack or not, once the waste-ratio reaches a certain amount.
+* Reduced the amount of FTP type queries to minimum. This increases patch speed especially for offline patches.
+! Fixed patch list not being sorted by id before execution (official).
+- Dropped grf.dll support.
+
+[Version 1.0.6]
++ Added progress tracking to repacking.
+* Cleaned up reading and writing of files.
+! Fixed a visual glitch, when window was minimized, after the patch process was completed.
+! Fixed patch list execution making assumptions about last downloaded file, when the file type wasn't recognized.
+! Fixed memory leaks in deleted nodes and possible crash on NULL pointer releasing (inverted check).
+! Fixed some issues with file nodes of not recognized file types.
+
+[Version 1.0.5]
++ First Public Release.
+* Grf patch pool is now released once the worker thread terminates, so that patches can be moved to another location, before deleted.
+* Files with other extensions than 'rgz' and 'gpf' are now just downloaded and not processed any further (official).
+! Fixed percent calculation precision-loss glitch from fix in 1.0.4 causing values over 100%.
+! Fixed wrong values being passed to progress info, upon minimizing.
+! Fixed errors during repack not getting recognized.
+! Fixed patch_allow.txt check failing for content longer than 5 bytes.
+! Fixed ftp files getting opened too early (before checking for local file).
+# Moved from alpha to beta stage.
+
+[Version 1.0.4]
+* Close button changes to 'Cancel' when patching is in progress.
+! Fixed main grf could become corrupted when the patch process was aborted.
+! Fixed wait message affecting title bar instead status line.
+! Fixed close button state modifications being applied on start button.
+! Fixed still occuring overflows in progress calculations.
+
+[Version 1.0.3]
+* Overall progress is now stepped by partial progress.
+* When "donut" is in effect, patch_allow.txt isn't processed at all (waste of time).
+! Fixed patch process failed, when a single file was requested multiple times (thx iRO Sakray/Valkyrie).
+! Fixed application icon missing 16x16 size for explorer view.
+
+[Version 1.0.2]
+* Manifest is now embedded in executable.
+! Fixed crash when patch list ends with whitespace (thx kRO Renewal).
+! Fixed overall progress in minimized status being of by one.
+
+[Version 1.0.1]
++ Taskbar button now shows percent of progress, when window is minimized.
++ Added original patcher's "donut" feature.
++ Added support for retrying failed downloads (optional).
+* Only a single instance is allowed to run, to prevent double patch problems.
+! Fixed memory leak in Ftp_FileGet.
+! Fixed integer overflow in progress bar.
+! Fixed partial downloaded files not getting registered for deletion.
+! Fixed downloaded files not being checked for completeness.
+! Fixed grflib corrupting patched grfs.
+! Fixed problems with window centering.
+! Fixed window size messing up with visual styles.
+! Fixed hFtpConnect handle not getting released on error.
+
+[Version 1.0.0]
++ First Private Release.
+
+====================================================================
